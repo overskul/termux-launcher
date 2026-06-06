@@ -320,6 +320,13 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         TermuxCrashUtils.notifyAppCrashFromCrashLogFile(this, LOG_TAG);
 
         mIsOnResumeAfterOnCreate = false;
+
+        if (mTerminalView != null) {
+            mTerminalView.postDelayed(() -> {
+                mTerminalView.invalidate();
+                mTerminalView.requestLayout();
+            }, 150);
+        }
     }
 
     @Override
@@ -374,9 +381,17 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         savedInstanceState.putBoolean(ARG_ACTIVITY_RECREATED, true);
     }
 
-
-
-
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (mIsInvalidState) return;
+        if (hasFocus && mTerminalView != null) {
+            mTerminalView.post(() -> {
+                mTerminalView.invalidate();
+                mTerminalView.requestLayout();
+            });
+        }
+    }
 
     /**
      * Part of the {@link ServiceConnection} interface. The service is bound with
@@ -427,6 +442,13 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
 
         // Update the {@link TerminalSession} and {@link TerminalEmulator} clients.
         mTermuxService.setTermuxTerminalSessionClient(mTermuxTerminalSessionActivityClient);
+
+        if (mTerminalView != null) {
+            mTerminalView.post(() -> {
+                mTerminalView.invalidate();
+                mTerminalView.requestLayout();
+            });
+        }
     }
 
     @Override
