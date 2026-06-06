@@ -386,10 +386,9 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         super.onWindowFocusChanged(hasFocus);
         if (mIsInvalidState) return;
         if (hasFocus && mTerminalView != null) {
-            mTerminalView.post(() -> {
-                mTerminalView.invalidate();
-                mTerminalView.requestLayout();
-            });
+            mTerminalView.onScreenUpdated();
+            mTerminalView.setTerminalCursorBlinkerState(true, true);
+            mTerminalView.invalidate();
         }
     }
 
